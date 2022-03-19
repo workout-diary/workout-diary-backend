@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableWebSecurity()
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -22,6 +23,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests()
+                .mvcMatchers("/v2/**",
+                        "/v3/**",
+                        "/configuration/**",
+                        "/swagger*/**",
+                        "/webjars/**",
+                        "/swagger-resources/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
