@@ -6,7 +6,6 @@ import com.deukgeun.workout.user.domain.Role;
 import com.deukgeun.workout.user.domain.User;
 import com.deukgeun.workout.user.dto.OAuth2User;
 import com.deukgeun.workout.user.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -31,15 +30,18 @@ public class UserService {
     }
 
     public User saveOrUpdate(OAuth2User oAuth2User) {
-        User requestUser = User.builder()
-                .email(oAuth2User.getEmail())
-                .providerId("kakao_" + oAuth2User.getId())
-                .provider(Provider.KAKAO)
-                .name(oAuth2User.getName())
-                .image(oAuth2User.getImage())
-                .role(Role.USER)
-                .build();
-        return userRepository.save(requestUser);
+        User user = userRepository.findByEmail(oAuth2User.getEmail()).orElse(null);
+        if (user == null) {
+            return userRepository.save(User.builder()
+                    .email(oAuth2User.getEmail())
+                    .providerId("kakao_" + oAuth2User.getId())
+                    .provider(Provider.KAKAO)
+                    .name(oAuth2User.getName())
+                    .image(oAuth2User.getImage())
+                    .role(Role.USER)
+                    .build());
+        }
+        return user;
     }
 
     public OAuth2User getKakaoUser(AccessToken accessToken) throws ParseException {
