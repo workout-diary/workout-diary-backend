@@ -5,6 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.deukgeun.workout.auth.dto.VerifyResult;
 import com.deukgeun.workout.user.domain.User;
+import com.deukgeun.workout.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,5 +56,10 @@ public class JwtUtil {
             return null;
         }
         return bearer.substring("Bearer ".length());
+    }
+
+    public static String findEmailByToken(String token) {
+        DecodedJWT verify = JWT.require(ALGORITHM).build().verify(token);
+        return verify.getSubject();
     }
 }
