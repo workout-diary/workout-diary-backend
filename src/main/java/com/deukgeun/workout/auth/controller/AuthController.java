@@ -22,7 +22,7 @@ public class AuthController {
     @Autowired
     private RedisService redisService;
 
-    @PostMapping("kakao")
+    @PostMapping("/kakao")
     public JwtToken generateTokens(@RequestBody AccessToken accessToken) throws ParseException {
         User user = userService.saveOrUpdate(userService.getKakaoUser(accessToken));
         String authToken = JwtUtil.makeAuthToken(user);
@@ -33,7 +33,6 @@ public class AuthController {
         return JwtToken.builder()
                 .authToken(authToken)
                 .refreshToken(refreshToken)
-                .build()
-                ;
+                .build();
     }
 }
