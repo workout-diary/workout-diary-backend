@@ -2,8 +2,8 @@ package com.deukgeun.workout.user.service;
 
 import com.deukgeun.workout.auth.dto.AccessToken;
 import com.deukgeun.workout.user.domain.Provider;
-import com.deukgeun.workout.user.domain.Role;
 import com.deukgeun.workout.user.domain.User;
+import com.deukgeun.workout.user.domain.UserAuthority;
 import com.deukgeun.workout.user.dto.OAuth2User;
 import com.deukgeun.workout.user.repository.UserRepository;
 import org.json.simple.JSONObject;
@@ -11,16 +11,20 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import java.net.URI;
+import java.util.HashSet;
 
 @Service
 @Transactional
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -29,17 +33,30 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
+    }
+
     public User saveOrUpdate(OAuth2User oAuth2User) {
         User user = userRepository.findByEmail(oAuth2User.getEmail()).orElse(null);
         if (user == null) {
-            return userRepository.save(User.builder()
+            User newUser = User.builder()
                     .email(oAuth2User.getEmail())
                     .providerId("kakao_" + oAuth2User.getId())
                     .provider(Provider.KAKAO)
                     .name(oAuth2User.getName())
                     .image(oAuth2User.getImage())
-                    .role(Role.USER)
-                    .build());
+                    .enabled(true)
+                    .build();
+            newUser = userRepository.save(newUser);
+
+            HashSet<UserAuthority> authorities = new HashSet<>();
+            UserAuthority newRole = new UserAuthority(newUser.getId(), "USER");
+            authorities.add(newRole);
+            newUser.setAuthorities(authorities);
+
+            return userRepository.save(newUser);
         }
         return user;
     }
@@ -77,4 +94,5 @@ public class UserService {
                 .build();
 
     }
+
 }
