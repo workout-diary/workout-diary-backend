@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private boolean enabled;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "provider_id", foreignKey = @ForeignKey(name = "provider_id"))
+    @JoinColumn(name = "id", foreignKey = @ForeignKey(name = "id"))
     private Set<UserAuthority> authorities;
 
     @Override

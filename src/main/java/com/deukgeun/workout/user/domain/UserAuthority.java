@@ -18,8 +18,8 @@ import javax.persistence.*;
 public class UserAuthority implements GrantedAuthority {
 
     @Id
-    @Column(name = "provider_id")
-    private Long providerId;
+    @Column(name = "id")
+    private Long id;
 
     @Id
     private String authority;
