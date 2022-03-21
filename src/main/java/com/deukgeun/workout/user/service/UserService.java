@@ -4,7 +4,8 @@ import com.deukgeun.workout.auth.dto.AccessToken;
 import com.deukgeun.workout.user.domain.Provider;
 import com.deukgeun.workout.user.domain.User;
 import com.deukgeun.workout.user.domain.UserAuthority;
-import com.deukgeun.workout.user.dto.OAuth2User;
+import com.deukgeun.workout.user.domain.UserProperty;
+import com.deukgeun.workout.user.dto.UserDto;
 import com.deukgeun.workout.user.repository.UserRepository;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -38,15 +39,15 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-    public User saveOrUpdate(OAuth2User oAuth2User) {
-        User user = userRepository.findByEmail(oAuth2User.getEmail()).orElse(null);
+    public User saveOrUpdate(UserDto userDto) {
+        User user = userRepository.findByEmail(userDto.getEmail()).orElse(null);
         if (user == null) {
             User newUser = User.builder()
-                    .email(oAuth2User.getEmail())
-                    .providerId("kakao_" + oAuth2User.getId())
+                    .email(userDto.getEmail())
+                    .providerId("kakao_" + userDto.getId())
                     .provider(Provider.KAKAO)
-                    .name(oAuth2User.getName())
-                    .image(oAuth2User.getImage())
+                    .name(userDto.getName())
+                    .image(userDto.getImage())
                     .enabled(true)
                     .build();
             newUser = userRepository.save(newUser);
@@ -55,13 +56,19 @@ public class UserService implements UserDetailsService {
             UserAuthority newRole = new UserAuthority(newUser.getId(), "USER");
             authorities.add(newRole);
             newUser.setAuthorities(authorities);
+            newUser.setUserProperty(UserProperty.builder()
+                    .id(newUser.getId())
+                    .build());
 
             return userRepository.save(newUser);
         }
-        return user;
+        user.setEmail(userDto.getEmail());
+        user.setImage(userDto.getImage());
+        user.setName(userDto.getName());
+        return userRepository.save(user);
     }
 
-    public OAuth2User getKakaoUser(AccessToken accessToken) throws ParseException {
+    public UserDto getKakaoUser(AccessToken accessToken) throws ParseException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
@@ -86,7 +93,7 @@ public class UserService implements UserDetailsService {
         String email = (String) kakaoAccount.get("email");
         Long id = (Long) jsonObject.get("id");
 
-        return OAuth2User.builder()
+        return UserDto.builder()
                 .email(email)
                 .id(id)
                 .image(image)
