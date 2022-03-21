@@ -41,6 +41,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "id", foreignKey = @ForeignKey(name = "id"))
     private Set<UserAuthority> authorities;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id", foreignKey = @ForeignKey(name = "id"))
+    private UserProperty userProperty;
+
     @Override
     public String getPassword() {
         return null;
