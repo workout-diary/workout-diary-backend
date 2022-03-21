@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OAuth2User {
+public class UserDto {
 
     private Long id;
     private String name;
