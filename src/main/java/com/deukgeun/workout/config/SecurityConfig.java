@@ -36,6 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-resources/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic().disable()
                 .csrf().disable()
