@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class JwtToken {
+public class JwtTokenDto {
 
     private String authToken;
     private String refreshToken;

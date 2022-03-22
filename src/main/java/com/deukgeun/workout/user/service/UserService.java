@@ -1,6 +1,6 @@
 package com.deukgeun.workout.user.service;
 
-import com.deukgeun.workout.auth.dto.AccessToken;
+import com.deukgeun.workout.auth.dto.AccessTokenDto;
 import com.deukgeun.workout.user.domain.Provider;
 import com.deukgeun.workout.user.domain.User;
 import com.deukgeun.workout.user.domain.UserAuthority;
@@ -68,7 +68,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public UserDto getKakaoUser(AccessToken accessToken) throws ParseException {
+    public UserDto getKakaoUser(AccessTokenDto accessTokenDto) throws ParseException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
@@ -77,7 +77,7 @@ public class UserService implements UserDetailsService {
                 .toUri();
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", "Bearer " + accessToken.getAccessToken());
+        httpHeaders.set("Authorization", "Bearer " + accessTokenDto.getAccessToken());
         HttpEntity<String> requestEntity = new HttpEntity<>(null, httpHeaders);
 
         RestTemplate restTemplate = new RestTemplate();
