@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "user_authorities")
 @IdClass(UserAuthority.class)
-public class UserAuthority implements GrantedAuthority {
+public class UserAuthority extends BaseTimeEntity implements GrantedAuthority {
 
     @Id
     @Column(name = "id")

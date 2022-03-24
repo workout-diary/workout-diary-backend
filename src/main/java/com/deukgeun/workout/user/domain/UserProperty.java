@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Builder
 @Table(name = "user_properties")
-public class UserProperty {
+public class UserProperty extends BaseTimeEntity {
 
     @Id
     @Column(name = "id")
