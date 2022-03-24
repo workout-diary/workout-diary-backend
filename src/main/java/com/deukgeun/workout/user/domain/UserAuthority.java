@@ -1,27 +1,28 @@
 package com.deukgeun.workout.user.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "user_authorities")
-@IdClass(UserAuthority.class)
 public class UserAuthority extends BaseTimeEntity implements GrantedAuthority {
 
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Id
+    @ManyToOne(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    User user;
+
+    @Column
     private String authority;
 }
 

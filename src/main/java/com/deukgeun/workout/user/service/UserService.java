@@ -6,6 +6,8 @@ import com.deukgeun.workout.user.domain.User;
 import com.deukgeun.workout.user.domain.UserAuthority;
 import com.deukgeun.workout.user.domain.UserProperty;
 import com.deukgeun.workout.user.dto.UserDto;
+import com.deukgeun.workout.user.repository.UserAuthorityRepository;
+import com.deukgeun.workout.user.repository.UserPropertyRepository;
 import com.deukgeun.workout.user.repository.UserRepository;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -30,8 +32,18 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    @Autowired
+    private UserAuthorityRepository userAuthorityRepository;
+
+    @Autowired
+    private UserPropertyRepository userPropertyRepository;
+
+    public UserService(UserRepository userRepository,
+                       UserAuthorityRepository userAuthorityRepository,
+                       UserPropertyRepository userPropertyRepository) {
         this.userRepository = userRepository;
+        this.userAuthorityRepository = userAuthorityRepository;
+        this.userPropertyRepository = userPropertyRepository;
     }
 
     @Override
@@ -42,24 +54,32 @@ public class UserService implements UserDetailsService {
     public User saveOrUpdate(UserDto userDto) {
         User user = userRepository.findByEmail(userDto.getEmail()).orElse(null);
         if (user == null) {
+            UserAuthority userAuthority = UserAuthority.builder()
+                    .authority("USER")
+                    .build();
+            userAuthorityRepository.save(userAuthority);
+
+            UserProperty userProperty = new UserProperty();
+            userPropertyRepository.save(userProperty);
+
             User newUser = User.builder()
                     .email(userDto.getEmail())
+                    .image(userDto.getImage())
+                    .name(userDto.getName())
+                    .enabled(true)
                     .providerId("kakao_" + userDto.getId())
                     .provider(Provider.KAKAO)
-                    .name(userDto.getName())
-                    .image(userDto.getImage())
-                    .enabled(true)
+                    .authorities(new HashSet<>())
                     .build();
-            newUser = userRepository.save(newUser);
+            userRepository.save(newUser);
 
-            HashSet<UserAuthority> authorities = new HashSet<>();
-            UserAuthority newRole = new UserAuthority(newUser.getId(), "USER");
-            authorities.add(newRole);
-            newUser.setAuthorities(authorities);
-            newUser.setUserProperty(UserProperty.builder()
-                    .id(newUser.getId())
-                    .build());
+            userAuthority.setUser(newUser);
+            userAuthorityRepository.save(userAuthority);
+            userProperty.setUser(newUser);
+            userPropertyRepository.save(userProperty);
 
+            newUser.addAuthority(userAuthority);
+            newUser.setUserProperty(userProperty);
             return userRepository.save(newUser);
         }
         user.setEmail(userDto.getEmail());
