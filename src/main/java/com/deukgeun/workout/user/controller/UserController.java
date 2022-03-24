@@ -64,4 +64,9 @@ public class UserController {
                 .image(user.getImage())
                 .build();
     }
+
+    @DeleteMapping("/me/{id}")
+    public void deleteUser(@PathVariable("id") Long id) {
+        userRepository.deleteById(id);
+    }
 }
