@@ -1,6 +1,7 @@
 package com.deukgeun.workout.user.controller;
 
 import com.deukgeun.workout.config.JwtUtil;
+import com.deukgeun.workout.redis.service.RedisService;
 import com.deukgeun.workout.user.domain.User;
 import com.deukgeun.workout.user.domain.UserProperty;
 import com.deukgeun.workout.user.dto.UserDto;
@@ -22,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserPropertyService userPropertyService;
+
+    @Autowired
+    private RedisService redisService;
 
     @PostMapping("me/property/{id}")
     public UserPropertyDto setUserProperty(
@@ -83,5 +87,13 @@ public class UserController {
     @DeleteMapping("/me/{id}")
     public void deleteUser(@PathVariable("id") Long id) {
         userRepository.deleteById(id);
+    }
+
+    @PostMapping("/logout")
+    public void logoutUser(HttpServletRequest request) {
+        String refreshToken = JwtUtil.resolveRefreshToken(request);
+        if (redisService.isRefreshTokenInRedis(refreshToken)) {
+            redisService.delValue(refreshToken);
+        }
     }
 }
