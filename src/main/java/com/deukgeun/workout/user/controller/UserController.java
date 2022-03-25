@@ -52,6 +52,21 @@ public class UserController {
                 .build();
     }
 
+    @PutMapping("/me/property/{id}")
+    public UserPropertyDto updateUserProperty(
+            @PathVariable("id") Long id,
+            @RequestBody UserPropertyDto userPropertyDto) throws Exception {
+        UserProperty userProperty = userPropertyService.saveOrUpdate(userPropertyDto);
+
+        return UserPropertyDto.builder()
+                .id(id)
+                .weight(userProperty.getWeight())
+                .height(userProperty.getHeight())
+                .bodyFat(userProperty.getBodyFat())
+                .age(userProperty.getAge())
+                .build();
+    }
+
     @GetMapping("/me")
     public UserDto getUserInfo(HttpServletRequest request) {
         String email = JwtUtil.findEmailByToken(JwtUtil.resolveAuthToken(request));

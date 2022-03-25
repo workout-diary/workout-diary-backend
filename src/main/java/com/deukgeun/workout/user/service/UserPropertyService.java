@@ -20,7 +20,7 @@ public class UserPropertyService {
     }
 
     public UserProperty saveOrUpdate(UserPropertyDto userPropertyDto) throws Exception {
-        UserProperty userProperty = userPropertyRepository.findById(userPropertyDto.getId())
+        UserProperty userProperty = userPropertyRepository.findByUserId(userPropertyDto.getId())
                 .orElseThrow(() -> new Exception("Request id is not valid."));
 
         userProperty.setAge(userPropertyDto.getAge());
