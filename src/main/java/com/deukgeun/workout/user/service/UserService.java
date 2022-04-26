@@ -23,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 @Service
@@ -70,6 +71,7 @@ public class UserService implements UserDetailsService {
                     .providerId("kakao_" + userDto.getId())
                     .provider(Provider.KAKAO)
                     .authorities(new HashSet<>())
+                    .workoutSets(new HashSet<>())
                     .build();
             userRepository.save(newUser);
 

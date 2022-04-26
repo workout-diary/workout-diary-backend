@@ -20,7 +20,7 @@ public class UserAuthority extends BaseTimeEntity implements GrantedAuthority {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @ToString.Exclude
-    User user;
+    private User user;
 
     @Column
     private String authority;

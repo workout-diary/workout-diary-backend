@@ -1,9 +1,11 @@
 package com.deukgeun.workout.user.domain;
 
+import com.deukgeun.workout.workout.domain.WorkoutSet;
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 
@@ -43,6 +45,11 @@ public class User extends BaseTimeEntity implements UserDetails {
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private Set<UserAuthority> authorities;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    private Set<WorkoutSet> workoutSets;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @ToString.Exclude
